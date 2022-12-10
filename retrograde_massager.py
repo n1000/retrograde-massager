@@ -19,7 +19,7 @@
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 
 # Input data is a dict containing { "name": bool, ... } info.
 #
@@ -58,9 +58,6 @@ def print_c_file(f, header_filename, data_rows, name_to_bitpos_map):
     print("const size_t NUM_RETROGRADE_DATA_ENTRIES = sizeof(retrograde_data) / sizeof(retrograde_data[0]);", file=f)
 
 def print_c_header(f, name_to_bitpos_map):
-    sorted_name_bit_tuple_list = sorted(list(name_to_bitpos_map.items()), key=lambda x: x[1])
-    sorted_name_list = [x[0] for x in sorted_name_bit_tuple_list]
-
     print("#include <stdint.h>", file=f)
     print("#include <stddef.h>", file=f)
     print(file=f)
@@ -98,7 +95,10 @@ def make_bitmap(name_to_bitpos_map, data):
 
     return bitmap
 
-# output is a list of (date, bitmap) tuples
+# output is a tuple containing: (output_rows, name_to_bitpos_map)
+#
+# where name_to_bitpos_map is a mapping between the celestial body name and a bit position:
+#     { "name": bit_pos, ... }
 def extract_json_data(input_filename):
     output_rows = []
     name_to_bitpos_map = {}
@@ -170,11 +170,6 @@ def gen_sqlite_output(args, name_to_bitpos_map, data_rows):
     print("Generated {}.".format(output_filename))
 
 def main():
-    # Celestial body to bit mapping
-    #
-    # { "name": bit_pos, ... }
-    name_to_bitmap_pos = {}
-
     parser = argparse.ArgumentParser(prog="retrograde_massager", description="Massages retrograde json data files into other formats")
 
     parser.add_argument("output_mode", choices=["c", "sqlite"])
