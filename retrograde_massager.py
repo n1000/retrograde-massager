@@ -140,9 +140,6 @@ def gen_c_output(args, name_to_bitpos_map, data_rows):
 def gen_sqlite_output(args, name_to_bitpos_map, data_rows):
     output_filename = "{}.sqlite".format(args.output_file_prefix)
 
-    sorted_name_bit_tuple_list = sorted(list(name_to_bitpos_map.items()), key=lambda x: x[1])
-    sorted_name_list = [x[0] for x in sorted_name_bit_tuple_list]
-
     with open(output_filename, "w") as f:
         print("CREATE TABLE IF NOT EXISTS retrograde_table (", file=f)
         print("    timestamp_seconds_utc INTEGER PRIMARY KEY", file=f)
